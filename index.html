@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
@@ -43,19 +43,19 @@
                 <h2 class="panel-title">
                     <span class="panel-icon">📁</span>
                     数据导入
-                    <button class="panel-toggle" data-panel="uploadContent">�?/button>
+                    <button class="panel-toggle" data-panel="uploadContent">▾</button>
                 </h2>
                 <div class="panel-content" id="uploadContent">
                     <div class="upload-zone" id="uploadZone">
                         <div class="upload-icon">⬆️</div>
-                        <p class="upload-text">拖拽文件到此�?/p>
+                        <p class="upload-text">拖拽文件到此处</p>
                         <p class="upload-hint">或点击选择文件</p>
                         <p class="upload-formats">支持 CSV / Excel / TXT / JSON</p>
                         <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.tsv,.txt,.json" hidden>
                     </div>
                     <div class="file-info" id="fileInfo" style="display:none;">
                         <span class="file-name" id="fileName"></span>
-                        <button class="btn btn-sm btn-danger" id="clearFile">�?/button>
+                        <button class="btn btn-sm btn-danger" id="clearFile">✕</button>
                     </div>
                 </div>
             </section>
@@ -65,11 +65,11 @@
                 <h2 class="panel-title">
                     <span class="panel-icon">📋</span>
                     数据预览
-                    <button class="panel-toggle" data-panel="previewContent">�?/button>
+                    <button class="panel-toggle" data-panel="previewContent">▾</button>
                 </h2>
                 <div class="panel-content" id="previewContent">
                     <div style="margin-bottom: 8px; text-align: right;">
-                        <button class="btn btn-sm" id="transposeDataBtn" title="交换行和�?
+                        <button class="btn btn-sm" id="transposeDataBtn" title="交换行和列"
                             style="background:var(--bg-tertiary);border:1px solid var(--border-color);padding:2px 8px;font-size:12px;cursor:pointer;">🔄
                             转置数据</button>
                     </div>
@@ -82,21 +82,21 @@
                 <h2 class="panel-title">
                     <span class="panel-icon">📈</span>
                     图表类型
-                    <button class="panel-toggle" data-panel="chartTypeContent">�?/button>
+                    <button class="panel-toggle" data-panel="chartTypeContent">▾</button>
                 </h2>
                 <div class="panel-content" id="chartTypeContent">
                     <div class="chart-type-grid" id="chartTypeGrid">
                         <button class="chart-type-card active" data-type="line">
                             <span class="chart-type-icon">📈</span>
-                            <span class="chart-type-label">折线�?/span>
+                            <span class="chart-type-label">折线图</span>
                         </button>
                         <button class="chart-type-card" data-type="bar">
                             <span class="chart-type-icon">📊</span>
-                            <span class="chart-type-label">柱状�?/span>
+                            <span class="chart-type-label">柱状图</span>
                         </button>
                         <button class="chart-type-card" data-type="scatter">
                             <span class="chart-type-icon">🔵</span>
-                            <span class="chart-type-label">散点�?/span>
+                            <span class="chart-type-label">散点图</span>
                         </button>
                         <button class="chart-type-card" data-type="pie">
                             <span class="chart-type-icon">🥧</span>
@@ -104,11 +104,11 @@
                         </button>
                         <button class="chart-type-card" data-type="heatmap">
                             <span class="chart-type-icon">🔥</span>
-                            <span class="chart-type-label">热力�?/span>
+                            <span class="chart-type-label">热力图</span>
                         </button>
                         <button class="chart-type-card" data-type="boxplot">
                             <span class="chart-type-icon">📦</span>
-                            <span class="chart-type-label">箱线�?/span>
+                            <span class="chart-type-label">箱线图</span>
                         </button>
                     </div>
                 </div>
@@ -119,7 +119,7 @@
                 <h2 class="panel-title">
                     <span class="panel-icon">🔗</span>
                     数据映射
-                    <button class="panel-toggle" data-panel="dataMappingContent">�?/button>
+                    <button class="panel-toggle" data-panel="dataMappingContent">▾</button>
                 </h2>
                 <div class="panel-content" id="dataMappingContent">
                     <div class="form-group">
@@ -135,7 +135,7 @@
                         <select class="form-select" id="valueColumn"></select>
                     </div>
                     <div class="form-group" id="labelColumnGroup" style="display:none;">
-                        <label class="form-label">标签�?/label>
+                        <label class="form-label">标签列</label>
                         <select class="form-select" id="labelColumn"></select>
                     </div>
                 </div>
@@ -146,12 +146,12 @@
                 <h2 class="panel-title">
                     <span class="panel-icon">🎨</span>
                     样式设置
-                    <button class="panel-toggle" data-panel="styleContent">�?/button>
+                    <button class="panel-toggle" data-panel="styleContent">▾</button>
                 </h2>
                 <div class="panel-content" id="styleContent">
                     <div class="form-group">
                         <label class="form-label">图表标题</label>
-                        <input type="text" class="form-input" id="chartTitle" placeholder="请输入图表标�?>
+                        <input type="text" class="form-input" id="chartTitle" placeholder="请输入图表标题">
                     </div>
                     <div class="form-group">
                         <label class="form-label">字体</label>
@@ -173,20 +173,20 @@
                         <span class="range-value" id="titleFontSizeValue">14px</span>
                     </div>
                     <div class="form-group" id="xAxisNameGroup">
-                        <label class="form-label">X 轴名�?/label>
-                        <input type="text" class="form-input" id="xAxisName" placeholder="X 轴名�?>
+                        <label class="form-label">X 轴名称</label>
+                        <input type="text" class="form-input" id="xAxisName" placeholder="X 轴名称">
                     </div>
                     <div class="form-group" id="yAxisNameGroup">
-                        <label class="form-label">Y 轴名�?/label>
-                        <input type="text" class="form-input" id="yAxisName" placeholder="Y 轴名�?>
+                        <label class="form-label">Y 轴名称</label>
+                        <input type="text" class="form-input" id="yAxisName" placeholder="Y 轴名称">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">坐标轴字�?/label>
+                        <label class="form-label">坐标轴字号</label>
                         <input type="range" class="form-range" id="axisFontSize" min="8" max="20" value="12">
                         <span class="range-value" id="axisFontSizeValue">12px</span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">轴名称字�?/label>
+                        <label class="form-label">轴名称字号</label>
                         <input type="range" class="form-range" id="axisNameFontSize" min="10" max="22" value="14">
                         <span class="range-value" id="axisNameFontSizeValue">14px</span>
                     </div>
@@ -273,7 +273,7 @@
                         </label>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">显示网格�?/label>
+                        <label class="form-label">显示网格线</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="showGrid">
                             <span class="toggle-slider"></span>
@@ -316,7 +316,7 @@
             <div class="chart-placeholder" id="chartPlaceholder">
                 <div class="placeholder-content">
                     <span class="placeholder-icon">📊</span>
-                    <h2>开始制作图�?/h2>
+                    <h2>开始制作图表</h2>
                     <p>从左侧上传数据文件，选择图表类型即可生成图表</p>
                 </div>
             </div>
@@ -328,7 +328,7 @@
 
     <!-- 状态栏 -->
     <footer class="statusbar">
-        <span id="statusText">正在系统初始�?.. (如果长时间停留在此，说明脚本加载失败)</span>
+        <span id="statusText">正在系统初始化... (如果长时间停留在此，说明脚本加载失败)</span>
         <span id="dataInfo"></span>
     </footer>
 
