@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据图件制作工具</title>
+    <meta name="description" content="在线数据可视化工具，支持多种数据格式和图表类型，快速生成高质量图表">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <!-- Papa Parse (CSV) -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5/papaparse.min.js"></script>
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="navbar">
+        <div class="navbar-brand">
+            <span class="logo-icon">📊</span>
+            <h1>数据图件制作工具</h1>
+        </div>
+        <div class="navbar-actions">
+            <button id="themeToggle" class="btn btn-icon" title="切换主题">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="app-layout">
+        <!-- 左侧控制面板 -->
+        <aside class="sidebar" id="sidebar">
+            <!-- 文件上传 -->
+            <section class="panel" id="uploadPanel">
+                <h2 class="panel-title">
+                    <span class="panel-icon">📁</span>
+                    数据导入
+                    <button class="panel-toggle" data-panel="uploadContent">▾</button>
+                </h2>
+                <div class="panel-content" id="uploadContent">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">⬆️</div>
+                        <p class="upload-text">拖拽文件到此处</p>
+                        <p class="upload-hint">或点击选择文件</p>
+                        <p class="upload-formats">支持 CSV / Excel / TXT / JSON</p>
+                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.tsv,.txt,.json" hidden>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display:none;">
+                        <span class="file-name" id="fileName"></span>
+                        <button class="btn btn-sm btn-danger" id="clearFile">✕</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 数据预览 -->
+            <section class="panel" id="previewPanel" style="display:none;">
+                <h2 class="panel-title">
+                    <span class="panel-icon">📋</span>
+                    数据预览
+                    <button class="panel-toggle" data-panel="previewContent">▾</button>
+                </h2>
+                <div class="panel-content" id="previewContent">
+                    <div style="margin-bottom: 8px; text-align: right;">
+                        <button class="btn btn-sm" id="transposeDataBtn" title="交换行和列"
+                            style="background:var(--bg-tertiary);border:1px solid var(--border-color);padding:2px 8px;font-size:12px;cursor:pointer;">🔄
+                            转置数据</button>
+                    </div>
+                    <div class="table-wrapper" id="dataPreview"></div>
+                </div>
+            </section>
+
+            <!-- 图表类型 -->
+            <section class="panel" id="chartTypePanel" style="display:none;">
+                <h2 class="panel-title">
+                    <span class="panel-icon">📈</span>
+                    图表类型
+                    <button class="panel-toggle" data-panel="chartTypeContent">▾</button>
+                </h2>
+                <div class="panel-content" id="chartTypeContent">
+                    <div class="chart-type-grid" id="chartTypeGrid">
+                        <button class="chart-type-card active" data-type="line">
+                            <span class="chart-type-icon">📈</span>
+                            <span class="chart-type-label">折线图</span>
+                        </button>
+                        <button class="chart-type-card" data-type="bar">
+                            <span class="chart-type-icon">📊</span>
+                            <span class="chart-type-label">柱状图</span>
+                        </button>
+                        <button class="chart-type-card" data-type="scatter">
+                            <span class="chart-type-icon">🔵</span>
+                            <span class="chart-type-label">散点图</span>
+                        </button>
+                        <button class="chart-type-card" data-type="pie">
+                            <span class="chart-type-icon">🥧</span>
+                            <span class="chart-type-label">饼图</span>
+                        </button>
+                        <button class="chart-type-card" data-type="heatmap">
+                            <span class="chart-type-icon">🔥</span>
+                            <span class="chart-type-label">热力图</span>
+                        </button>
+                        <button class="chart-type-card" data-type="boxplot">
+                            <span class="chart-type-icon">📦</span>
+                            <span class="chart-type-label">箱线图</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 数据映射 -->
+            <section class="panel" id="dataMappingPanel" style="display:none;">
+                <h2 class="panel-title">
+                    <span class="panel-icon">🔗</span>
+                    数据映射
+                    <button class="panel-toggle" data-panel="dataMappingContent">▾</button>
+                </h2>
+                <div class="panel-content" id="dataMappingContent">
+                    <div class="form-group">
+                        <label class="form-label">X 轴数据列</label>
+                        <select class="form-select" id="xColumn"></select>
+                    </div>
+                    <div class="form-group" id="yColumnGroup">
+                        <label class="form-label">Y 轴数据列 <span class="hint">（可多选）</span></label>
+                        <div class="checkbox-group" id="yColumns"></div>
+                    </div>
+                    <div class="form-group" id="valueColumnGroup" style="display:none;">
+                        <label class="form-label">数值列</label>
+                        <select class="form-select" id="valueColumn"></select>
+                    </div>
+                    <div class="form-group" id="labelColumnGroup" style="display:none;">
+                        <label class="form-label">标签列</label>
+                        <select class="form-select" id="labelColumn"></select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 样式设置 -->
+            <section class="panel" id="stylePanel" style="display:none;">
+                <h2 class="panel-title">
+                    <span class="panel-icon">🎨</span>
+                    样式设置
+                    <button class="panel-toggle" data-panel="styleContent">▾</button>
+                </h2>
+                <div class="panel-content" id="styleContent">
+                    <div class="form-group">
+                        <label class="form-label">图表标题</label>
+                        <input type="text" class="form-input" id="chartTitle" placeholder="请输入图表标题">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">字体</label>
+                        <select class="form-select" id="fontFamily">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Palatino">Palatino</option>
+                            <option value="Calibri">Calibri</option>
+                            <option value="Noto Sans SC">思源黑体</option>
+                            <option value="SimSun">宋体</option>
+                            <option value="Microsoft YaHei">微软雅黑</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">标题字号</label>
+                        <input type="range" class="form-range" id="titleFontSize" min="10" max="28" value="14">
+                        <span class="range-value" id="titleFontSizeValue">14px</span>
+                    </div>
+                    <div class="form-group" id="xAxisNameGroup">
+                        <label class="form-label">X 轴名称</label>
+                        <input type="text" class="form-input" id="xAxisName" placeholder="X 轴名称">
+                    </div>
+                    <div class="form-group" id="yAxisNameGroup">
+                        <label class="form-label">Y 轴名称</label>
+                        <input type="text" class="form-input" id="yAxisName" placeholder="Y 轴名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">坐标轴字号</label>
+                        <input type="range" class="form-range" id="axisFontSize" min="8" max="20" value="12">
+                        <span class="range-value" id="axisFontSizeValue">12px</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">轴名称字号</label>
+                        <input type="range" class="form-range" id="axisNameFontSize" min="10" max="22" value="14">
+                        <span class="range-value" id="axisNameFontSizeValue">14px</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">配色方案</label>
+                        <div class="color-scheme-grid" id="colorSchemeGrid">
+                            <button class="color-scheme-btn active" data-scheme="nature">
+                                <span class="color-dots">
+                                    <i style="background:#E64B35"></i><i style="background:#4DBBD5"></i><i
+                                        style="background:#00A087"></i><i style="background:#3C5488"></i>
+                                </span>
+                                <span>Nature</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="science">
+                                <span class="color-dots">
+                                    <i style="background:#3B4992"></i><i style="background:#EE0000"></i><i
+                                        style="background:#008B45"></i><i style="background:#631879"></i>
+                                </span>
+                                <span>Science</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="lancet">
+                                <span class="color-dots">
+                                    <i style="background:#00468B"></i><i style="background:#ED0000"></i><i
+                                        style="background:#42B540"></i><i style="background:#0099B4"></i>
+                                </span>
+                                <span>Lancet</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="jama">
+                                <span class="color-dots">
+                                    <i style="background:#374E55"></i><i style="background:#DF8F44"></i><i
+                                        style="background:#00A1D5"></i><i style="background:#B24745"></i>
+                                </span>
+                                <span>JAMA</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="default">
+                                <span class="color-dots">
+                                    <i style="background:#5470c6"></i><i style="background:#91cc75"></i><i
+                                        style="background:#fac858"></i><i style="background:#ee6666"></i>
+                                </span>
+                                <span>经典</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="academic">
+                                <span class="color-dots">
+                                    <i style="background:#2c3e50"></i><i style="background:#3498db"></i><i
+                                        style="background:#e74c3c"></i><i style="background:#27ae60"></i>
+                                </span>
+                                <span>学术</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="vibrant">
+                                <span class="color-dots">
+                                    <i style="background:#ff6b6b"></i><i style="background:#4ecdc4"></i><i
+                                        style="background:#ffe66d"></i><i style="background:#a855f7"></i>
+                                </span>
+                                <span>活力</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="pastel">
+                                <span class="color-dots">
+                                    <i style="background:#a8d8ea"></i><i style="background:#aa96da"></i><i
+                                        style="background:#fcbad3"></i><i style="background:#ffffd2"></i>
+                                </span>
+                                <span>柔和</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="earth">
+                                <span class="color-dots">
+                                    <i style="background:#8B4513"></i><i style="background:#D2691E"></i><i
+                                        style="background:#DAA520"></i><i style="background:#556B2F"></i>
+                                </span>
+                                <span>大地</span>
+                            </button>
+                            <button class="color-scheme-btn" data-scheme="ocean">
+                                <span class="color-dots">
+                                    <i style="background:#006994"></i><i style="background:#0099cc"></i><i
+                                        style="background:#40bfb0"></i><i style="background:#87ceeb"></i>
+                                </span>
+                                <span>海洋</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">显示图例</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showLegend" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">显示网格线</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showGrid">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">平滑曲线</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="smoothLine">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">显示数据标签</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showDataLabel">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 导出 -->
+            <section class="panel" id="exportPanel" style="display:none;">
+                <h2 class="panel-title">
+                    <span class="panel-icon">💾</span>
+                    导出
+                </h2>
+                <div class="panel-content">
+                    <div class="export-buttons">
+                        <button class="btn btn-primary" id="exportPNG">导出 PNG</button>
+                        <button class="btn btn-secondary" id="exportSVG">导出 SVG</button>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- 右侧图表区域 -->
+        <section class="chart-area">
+            <div class="chart-placeholder" id="chartPlaceholder">
+                <div class="placeholder-content">
+                    <span class="placeholder-icon">📊</span>
+                    <h2>开始制作图表</h2>
+                    <p>从左侧上传数据文件，选择图表类型即可生成图表</p>
+                </div>
+            </div>
+            <div class="chart-container" id="chartContainer" style="display:none;">
+                <div id="chart"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 状态栏 -->
+    <footer class="statusbar">
+        <span id="statusText">就绪</span>
+        <span id="dataInfo"></span>
+    </footer>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+
+</html>
